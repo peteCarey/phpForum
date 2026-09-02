@@ -1,13 +1,5 @@
 <?php
-define('DB_SERVER','localhost');
-define('DB_USER','root');
-define('DB_PASS','password');
-define('DB_NAME','forum_test');
-
-$con = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME, 3307);
-if (!$con) {
-    die("DB connection failed: " . mysqli_connect_error());
-}
+require_once "database.php";
 
 // Validate ID
 if (!isset($_POST['id']) || !ctype_digit($_POST['id'])) {

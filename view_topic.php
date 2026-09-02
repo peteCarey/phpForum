@@ -1,162 +1,187 @@
-<?php
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Forum</title>
 
-$tbl_name="forum_question"; // Table name
-
-define('DB_SERVER','localhost');
-define('DB_USER','root');
-define('DB_PASS' ,'password');
-define('DB_NAME', 'forum_test');
-// Create connection
-$con = mysqli_connect(DB_SERVER,DB_USER,DB_PASS,DB_NAME, 3307);
-
-// Check connection
-if (mysqli_connect_errno())
-{
- echo "Failed to connect to MySQL: " . mysqli_connect_error();
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="forum.css">
+<style>
+* {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-// get value of id that sent from address bar - check value passed
-if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
-    die("Invalid topic ID.");
-}
-$id = (int)$_GET['id'];
-
-$sql="SELECT * FROM $tbl_name WHERE id='$id'";
-
-$result=mysqli_query($con, $sql);
-
-if (!$result) {
-    printf("Error: %s\n", mysqli_error($con));
-    exit();
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-While ($rows = mysqli_fetch_array($result, MYSQLI_ASSOC)){
-?>
-<table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
-<tr>
-<td><table width="100%" border="0" cellpadding="3" cellspacing="1" bordercolor="1" bgcolor="#FFFFFF">
-<tr>
-<td bgcolor="yellow"><strong><?php echo $rows['topic']; ?></strong></td>
-</tr>
+</style>
+</head>
 
-<tr>
-<td bgcolor="#F8F7F1"><?php echo $rows['detail']; ?></td>
-</tr>
 
-<tr>
-<td bgcolor="#F8F7F1"><strong>By :</strong> <?php echo $rows['name']; ?> <strong>Email : </strong><?php echo $rows['email'];?></td>
-</tr>
+<body>
+    <div class="topnav">
+        <a href="../../index.html">Exit Forum</a> 
+    </div>
 
-<tr>
-<td bgcolor="#F8F7F1"><strong>Date/time : </strong><?php echo $rows['datetime']; ?></td>
-</tr>
-</table></td>
-</tr>
-</table>
-<BR>
+    <div class="content"><?php
 
-<?php }
-$tbl_name2="forum_answer"; // Switch to table "forum_answer"
-$sql2="SELECT * FROM $tbl_name2 WHERE question_id='$id'";
-$result2=mysqli_query($con, $sql2);
-while($rows = mysqli_fetch_array($result2, MYSQLI_BOTH)){ 
-?>
+    $tbl_name="forum_question"; // Table name
 
-<table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
-<tr>
-<td><table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#FFFFFF">
-<tr>
-<td bgcolor="#F8F7F1"><strong>ID</strong></td>
-<td bgcolor="#F8F7F1">:</td>
-<td bgcolor="#F8F7F1"><?php echo $rows['id']; ?></td>
-</tr>
-<tr>
-<td width="18%" bgcolor="#F8F7F1"><strong>Name</strong></td>
-<td width="5%" bgcolor="#F8F7F1">:</td>
-<td width="77%" bgcolor="#F8F7F1"><?php echo $rows['a_name']; ?></td>
-</tr>
-<tr>
-<td bgcolor="#F8F7F1"><strong>Email</strong></td>
-<td bgcolor="#F8F7F1">:</td>
-<td bgcolor="#F8F7F1"><?php echo $rows['a_email']; ?></td>
-</tr>
-<tr>
-<td bgcolor="#F8F7F1"><strong>Answer</strong></td>
-<td bgcolor="#F8F7F1">:</td>
-<td bgcolor="#F8F7F1"><?php echo $rows['a_answer']; ?></td>
-</tr>
-<tr>
-<td bgcolor="#F8F7F1"><strong>Date/Time</strong></td>
-<td bgcolor="#F8F7F1">:</td>
-<td bgcolor="#F8F7F1"><?php echo $rows['a_datetime']; ?></td>
-</tr>
-</table></td>
-</tr>
-</table><br>
+    require_once "database.php";
 
-<?php
-}
+    // get value of id that sent from address bar - check value passed
+    if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
+        die("Invalid topic ID.");
+    }
+    $id = (int)$_GET['id'];
 
-$sql3 = "SELECT view FROM forum_question WHERE id = ?";
-$stmt = mysqli_prepare($con, $sql3);
-mysqli_stmt_bind_param($stmt, "i", $id);
-mysqli_stmt_execute($stmt);
-$result3 = mysqli_stmt_get_result($stmt);
+    $sql="SELECT * FROM $tbl_name WHERE id='$id'";
 
-$row = mysqli_fetch_assoc($result3);
+    $result=mysqli_query($con, $sql);
 
-if ($row === null) {
-    die("Topic not found.");
-}
+    if (!$result) {
+        printf("Error: %s\n", mysqli_error($con));
+        exit();
+    }
 
-$view = (int)$row['view'] + 1;
+    While ($rows = mysqli_fetch_array($result, MYSQLI_ASSOC)){
+    ?>
+    <table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
+    <tr>
+    <td><table width="100%" border="0" cellpadding="3" cellspacing="1" bordercolor="1" bgcolor="#FFFFFF">
+    <tr>
+    <td bgcolor="yellow"><strong><?php echo $rows['topic']; ?></strong></td>
+    </tr>
 
-$sql4 = "UPDATE forum_question SET view = ? WHERE id = ?";
-$stmt2 = mysqli_prepare($con, $sql4);
-mysqli_stmt_bind_param($stmt2, "ii", $view, $id);
-mysqli_stmt_execute($stmt2);
+    <tr>
+    <td bgcolor="#F8F7F1"><?php echo $rows['detail']; ?></td>
+    </tr>
 
-mysqli_close($con);
-?>
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>By :</strong> <?php echo $rows['name']; ?> <strong>Email : </strong><?php echo $rows['email'];?></td>
+    </tr>
 
-<BR>
-<table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
-<tr>
-<form name="form1" method="post" action="add_answer.php">
-<td>
-<table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#FFFFFF">
-<tr>
-<td width="18%"><strong>Name</strong></td>
-<td width="3%">:</td>
-<td width="79%"><input name="a_name" type="text" id="a_name" size="45"></td>
-</tr>
-<tr>
-<td><strong>Email</strong></td>
-<td>:</td>
-<td><input name="a_email" type="text" id="a_email" size="45"></td>
-</tr>
-<tr>
-<td valign="top"><strong>Answer</strong></td>
-<td valign="top">:</td>
-<td><textarea name="a_answer" cols="45" rows="3" id="a_answer"></textarea></td>
-</tr>
-<tr>
-<td>&nbsp;</td>
-<td><input type="hidden" name="id"  value="<?php echo $id; ?>"></td>
-<td><input type="submit" name="Submit" value="Submit"><input type="reset" name="Submit2" value="Reset"></td>
-</tr>
-</table>
-</td>
-</form>
-</tr>
-</table>
-<table>
-<tr>
-<td>
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>Date/time : </strong><?php echo $rows['datetime']; ?></td>
+    </tr>
+    </table></td>
+    </tr>
+    </table>
+    <BR>
 
-<?php
-echo "<a href='create_topic.php?id=".$id."'>Create topic</a>";
-?>
-</td>
-</tr>
-</table>
+    <?php }
+    $tbl_name2="forum_answer"; // Switch to table "forum_answer"
+    $sql2="SELECT * FROM $tbl_name2 WHERE question_id='$id'";
+    $result2=mysqli_query($con, $sql2);
+    while($rows = mysqli_fetch_array($result2, MYSQLI_BOTH)){ 
+    ?>
+
+    <table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
+    <tr>
+    <td><table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#FFFFFF">
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>ID</strong></td>
+    <td bgcolor="#F8F7F1">:</td>
+    <td bgcolor="#F8F7F1"><?php echo $rows['id']; ?></td>
+    </tr>
+    <tr>
+    <td width="18%" bgcolor="#F8F7F1"><strong>Name</strong></td>
+    <td width="5%" bgcolor="#F8F7F1">:</td>
+    <td width="77%" bgcolor="#F8F7F1"><?php echo $rows['a_name']; ?></td>
+    </tr>
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>Email</strong></td>
+    <td bgcolor="#F8F7F1">:</td>
+    <td bgcolor="#F8F7F1"><?php echo $rows['a_email']; ?></td>
+    </tr>
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>Answer</strong></td>
+    <td bgcolor="#F8F7F1">:</td>
+    <td bgcolor="#F8F7F1"><?php echo $rows['a_answer']; ?></td>
+    </tr>
+    <tr>
+    <td bgcolor="#F8F7F1"><strong>Date/Time</strong></td>
+    <td bgcolor="#F8F7F1">:</td>
+    <td bgcolor="#F8F7F1"><?php echo $rows['a_datetime']; ?></td>
+    </tr>
+    </table></td>
+    </tr>
+    </table><br>
+
+    <?php
+    }
+
+    $sql3 = "SELECT view FROM forum_question WHERE id = ?";
+    $stmt = mysqli_prepare($con, $sql3);
+    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_execute($stmt);
+    $result3 = mysqli_stmt_get_result($stmt);
+
+    $row = mysqli_fetch_assoc($result3);
+
+    if ($row === null) {
+        die("Topic not found.");
+    }
+
+    $view = (int)$row['view'] + 1;
+
+    $sql4 = "UPDATE forum_question SET view = ? WHERE id = ?";
+    $stmt2 = mysqli_prepare($con, $sql4);
+    mysqli_stmt_bind_param($stmt2, "ii", $view, $id);
+    mysqli_stmt_execute($stmt2);
+
+    mysqli_close($con);
+    ?>
+
+    <BR>
+    <table width="400" border="0" align="center" cellpadding="0" cellspacing="1" bgcolor="#CCCCCC">
+    <tr>
+    <form name="form1" method="post" action="add_answer.php">
+    <td>
+    <table width="100%" border="0" cellpadding="3" cellspacing="1" bgcolor="#FFFFFF">
+    <tr>
+    <td width="18%"><strong>Name</strong></td>
+    <td width="3%">:</td>
+    <td width="79%"><input name="a_name" type="text" id="a_name" size="45"></td>
+    </tr>
+    <tr>
+    <td><strong>Email</strong></td>
+    <td>:</td>
+    <td><input name="a_email" type="text" id="a_email" size="45"></td>
+    </tr>
+    <tr>
+    <td valign="top"><strong>Answer</strong></td>
+    <td valign="top">:</td>
+    <td><textarea name="a_answer" cols="45" rows="3" id="a_answer"></textarea></td>
+    </tr>
+    <tr>
+    <td>&nbsp;</td>
+    <td><input type="hidden" name="id"  value="<?php echo $id; ?>"></td>
+    <td><input type="submit" name="Submit" value="Submit"><input type="reset" name="Submit2" value="Reset"></td>
+    </tr>
+    </table>
+    </td>
+    </form>
+    </tr>
+    </table>
+    <table>
+    <tr>
+    <td>
+
+    <?php
+    echo "<a href='create_topic.php?id=".$id."'>Create topic</a>";
+    ?>
+    </td>
+    </tr>
+    </table>
+
+        </div>
+        <div class="footer">
+            <a href="../../index.html">Exit Forum</a>
+        </div>
+
+    </body>
+</html>

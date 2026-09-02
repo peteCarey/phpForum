@@ -1,0 +1,36 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.topnav,
+.footer {
+  background-color: #474e5d;
+}
+
+.topnav a,
+.footer a {
+  display: block;
+  padding: 14px 16px;
+  text-decoration: none;
+  color: #ddd;
+}
+
+/* Hover effect */
+.topnav a:hover,
+.footer a:hover {
+  color: #111;
+}
+
+.content {
+  flex: 1; /* pushes footer to bottom */
+  background-color: #1abc9c;
+  padding: 20px;
+}
