@@ -1,3 +1,15 @@
+<?php
+session_start();
+
+// Create a unique token for this form
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Record when the form was displayed
+$_SESSION['topic_form_time'] = time();
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,9 +29,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Honeypot - genuine visitors should never see or fill this */
+.website-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
 </style>
 </head>
-
 
 <body>
     <div class="topnav">
@@ -39,27 +59,60 @@ body {
                             <tr>
                                 <td width="14%"><strong>Topic</strong></td>
                                 <td width="2%">:</td>
-                                <td width="84%"><input name="topic" type="text" id="topic" size="50" /></td>
+                                <td width="84%">
+                                    <input name="topic" type="text" id="topic" size="50" maxlength="150"
+                                        required />
+                                </td>
                             </tr>
                             <tr>
                                 <td valign="top"><strong>Detail</strong></td>
                                 <td valign="top">:</td>
-                                <td><textarea name="detail" cols="50" rows="3" id="detail"></textarea></td>
+                                <td><textarea 
+                                        name="detail" cols="50" rows="3" id="detail  maxlength="5000"
+                                        required">
+                                    </textarea></td>
                             </tr>
                             <tr>
                                 <td><strong>Name</strong></td>
                                 <td>:</td>
-                            <td><input name="name" type="text" id="name" size="50" /></td>
+                                <td>
+                                <input name="name" type="text" id="name" size="50" maxlength="100"
+                                        required />
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>Email</strong></td>
                                 <td>:</td>
-                                <td><input name="email" type="text" id="email" size="50" /></td>
+                                <td>
+                                    <input name="email" type="text" id="email" size="50" maxlength="254"
+                                        required />
+                                </td>
                             </tr>
+                             <!-- Honeypot field -->
+                            <div class="website-field">
+                                <label for="website">Website</label>
+                                <input
+                                    type="text"
+                                    name="website"
+                                    id="website"
+                                    tabindex="-1"
+                                    autocomplete="off"
+                                >
+                            </div>
+
+                            <!-- CSRF token -->
+                            <input
+                                type="hidden"
+                                name="csrf_token"
+                                value="<?php echo htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>"
+                            >
                             <tr>
                                 <td>&nbsp;</td>
                                 <td>&nbsp;</td>
-                                <td><input type="submit" name="Submit" value="Submit" /> <input type="reset" name="Submit2" value="Reset" /></td>
+                                <td>
+                                    <input type="submit" name="Submit" value="Submit" /> 
+                                    <input type="reset" name="Submit2" value="Reset" />
+                                </td>
                             </tr>
                         </table>
                     </td>
